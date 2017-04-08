@@ -23,7 +23,6 @@ void read_and_distribute_token(int* token, int rank, int numtasks){
     if(i == rank){
       *token = element;
     }else{
-      //TODO: Implementar envio asincrono
       rc = MPI_Isend(&element, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &request);
       if (rc != MPI_SUCCESS) {
          printf("Send error in task %d\n", rank);
