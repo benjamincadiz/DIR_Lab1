@@ -1,0 +1,253 @@
+\documentclass[11pt]{article}
+\usepackage[spanish]{babel} % Paquete de español
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8]{inputenc} % Codificación
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}} % Carpeta en la cual se van a buscar las imagenes
+\usepackage{subfigure}	% Permite la Inclusión de subfiguras
+%\usepackage{parskip} % Borrar identación de parrafos.
+\setlength{\parskip}{2mm} % Longitud del espaciado entre parrafos
+\usepackage[hidelinks]{hyperref} % Referencias (links)
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setpapersize{A4} % Formato del papel - A4
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm} % Margenes
+\usepackage{paralist} % Permite un mayor control sobre las listas
+\usepackage{textcomp,marvosym,pifont} % Generación de símbolos especiales
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Insertar código en la memoria:
+% A partir de 'Listados de código cómodos y resultones con listings' de David Villa
+% http://crysol.org/es/node/909
+
+% Definición de colores
+\usepackage[usenames,dvipsnames,svgnames,x11names,table]{xcolor}
+\usepackage{color}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+
+%\usepackage{pxfonts} % Usar negrita en las plabras clave de los listados.
+\usepackage{courier} % Usar negrita en las plabras clave de los listados.
+
+\usepackage{listings}
+\lstset{ frame=Ltb,
+	framerule=0pt,
+	aboveskip=0.5cm,
+	framextopmargin=3pt,
+	framexbottommargin=3pt,
+	framexleftmargin=0.4cm,
+	framesep=0pt,
+	rulesep=.4pt,
+	backgroundcolor=\color{gray97},
+	rulesepcolor=\color{black},
+	texcl=true,
+	%
+	stringstyle=\ttfamily,
+	showstringspaces = false,
+	basicstyle=\small\ttfamily,
+	commentstyle=\color{gray45},
+	keywordstyle=\bfseries,
+	otherkeywords={String,MPI_Status,MPI_Request},
+	%
+	numbers=left,
+	numbersep=15pt,
+	numberstyle=\tiny,
+	numberfirstline = false,
+	breaklines=true,
+}
+
+% minimizar fragmentado de listados
+\lstnewenvironment{listing}[1][]
+{\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
+
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+	backgroundcolor=\color{gray75},
+}
+
+\lstdefinestyle{C}
+{language=C,
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\lstlistingname}{Listado} % Renombrar listados para que aparezcan en español.
+\usepackage{float} % Permite usar H en las figuras, de manera que se coloquen en la posición exacta en la que están en el código.
+
+
+% Añade un comando para crear indicaciones de pulsación de teclas
+\usepackage{tikz} % Paquete especializado en gráficos
+\usetikzlibrary{shadows} % Necesario para poder crear nuevo comando de indicación de pulsación de tecla.
+\newcommand*\tecla[1]{%   
+	\tikz[baseline=(key.base)]
+	\node[%
+	draw,
+	fill=white,
+	drop shadow={shadow xshift=0.25ex,shadow yshift=-0.25ex,fill=black,opacity=0.75},
+	rectangle,
+	rounded corners=2pt,
+	inner sep=1pt,
+	line width=0.5pt,
+	font=\scriptsize\sffamily
+	](key) {#1\strut}
+	;
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Principales variables del documento
+
+\title{MPI. Practica 1}							% Titulo
+\author{José~Ángel~Martín~Baos}							% Autor
+\date{\today}											% Fecha
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Portada
+
+\begin{titlepage}
+	\centering
+    \includegraphics[scale = 0.40]{uclm_logo.pdf}\\[1.0 cm]	% Logo de la universidad
+    \includegraphics[scale = 0.25]{esi.pdf}\\[1.0 cm]
+    \textsc{\LARGE Universidad de Castilla-La Mancha}\\[0.5 cm]	% Nombre de la universidad
+    \textsc{\LARGE Escuela Superior de Informática}\\[2.0 cm]
+	\textsc{\Large Diseño de Infraestructura de Red}\\[0.5 cm]				% Asignatura
+	\textsc{\large 3º Ingeniería de Computadores}\\[0.5 cm]						% Curso
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Autor:}\\
+			\theauthor
+			\end{flushleft}
+			\end{minipage}~
+			\begin{minipage}{0.4\textwidth}
+			\begin{flushright} \large
+			\emph{Fecha:} \\
+			\thedate
+		\end{flushright}
+	\end{minipage}\\[1.5 cm]
+ 
+	\vfill
+	
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Indice
+
+\tableofcontents
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Red Toroide}
+\subsection{Enunciado}
+Dado un archivo con nombre datos.dat, cuyo contenido es una lista de valores
+separados por comas, nuestro programa realizará lo siguiente:
+
+El proceso de rank 0 destribuirá a cada uno de los nodos de un toroide de
+lado L, los L x L numeros reales que estarán contenidos en el archivo datos.dat. En caso de que no se hayan lanzado suficientes elementos de proceso para los datos del programa, éste emitirá un error y todos los procesos finalizarán. En caso de que todos los procesos han recibido su correspondiente elemento,comenzará el proceso normal del programa.
+
+Se pide calcular el elemento menor de toda la red, el elemento de
+proceso con rank 0 mostrará en su salida estándar el valor obtenido.
+
+La complejidad del algoritmo no superará O(raiz\_cuadrada(n)) con n número de elementos de la red.
+
+
+
+\subsection{Planteamiento de la solución}
+Para resolver este ejercicio vamos a usar una red toroide. Las redes toroides se usan en redes de computadores de alto rendimiento. Es una malla en la cual sus filas y columnas tienen conexiones en anillo y son muy apropiadas en grandes instalaciones. 
+
+Su funcionamiento consiste en que cada nodo intercambia datos únicamente con sus vecinos. Aplicando esto a nuestro programa, primero se intercambiaran los datos por columnas, dónde cada nodo mandará su dato a su vecino inferior (al sur) L-1 veces (donde L es el lado de la red, o sea, la raiz cuadrada del número de nodos de la red). Después se repetirá este mismo procedimiento por filas.
+
+De esta manera, obtendremos la solución al ejercicio con $2*\sqrt{N-1}$ mensajes (siendo N el número total de nodos de la red), por lo tanto logramos cumplir el objetivo de que la complejidad del algoritmo no superase O(raiz\_cuadrada(N)).
+
+
+\subsection{Diseño y explicación del programa}
+% Explicar las medidas adoptadas, como por ej que elementos de la hoja de datos se cojen.
+Debemos resaltar algunas cuestiones de diseño. La primera tiene que ver con la lectura y distribución de los distintos elementos del archivo. El proceso cuyo \emph{rank} sea el 0, será el que leerá el archivo y distribuirá sus datos mediante la llamada a la función \texttt{read\_and\_distribute\_token()}. Con la llamada a está función se leerán tantos elementos como el numero de procesos lanzados. Debe haber un número de elementos en el archivo mayor o igual al de procesos lanzados. En caso de que se lancen menos proceso que elementos hay en el archivo, solo se leerán los primeros. El resto de procesos llamarán a la función \texttt{obtain\_token()} que obtendrá su elemento asociado.
+
+Para calcular los vecinos de un nodo (vecinos norte, sur, este y oeste) se ha usado la función \texttt{obtain\_neighbors}. Esta función mediante unas pequeñas cuentas obtiene el \emph{rank} de los vecinos de un determinado nodo (proceso).
+
+El algoritmo que ejecuta cada proceso consiste en dos bucles \emph{for}. Ambos iterarán tantas veces como el valor de L (el valor del lado). El primero de estos bucles permitirá que los procesos se manden los datos por columnas, como se indicó en el planteamiento de la solución. De tal manera que cada proceso mandará al que tenga en el sur, y recibirá del que tenga en el norte. El segundo hará lo propio en filas, mandando su \emph{token} al proceso en el este y recibiendo el que tenga en el oeste. En cada iteracción de estos bucles se comprueba cuál es el menor, y este es conservado como \emph{token}. 
+
+Finalmente el proceso con \emph{rank} 0 será el encargado de mostrar el elemento menor de la red, que será el estado actual de su \emph{token}. Este elemento será el mismo en todos los nodos de la red en este momento.
+
+
+\subsection{Fuentes del programa}
+\lstinputlisting[style=C,
+caption={red\_toroide.c},
+label={lst:red_toroide},
+firstline=8]{../red_toroide.c}
+
+
+\subsection{Instrucciones de compilación y ejecución}
+Para compilar el ejercicio vamos a ejecutar el siguiente comando:
+\begin{listing}[style=consola, numbers=none]
+$ make red-toroide
+\end{listing}%$
+
+Para ejecutarlo vamos a usar la siguiente orden:
+\begin{listing}[style=consola, numbers=none]
+$ mpirun -n 16 red_toroide
+\end{listing}%$
+
+Como se puede observar se ha usado la opción \texttt{-n 16} para crear 16 procesos dado que la constante $L$ se ha definido a 4. En caso de que esta fuera otra, se deben crear $L*L$ procesos.
+
+
+\subsection{Conclusiones}
+Las conclusiones que se obtienen de la realización de este ejercicio están relacionadas con las ventajas que conlleva saber en que tipo de arquitectura está corriendo nuestro programa. En este caso, estamos simulando que nuestro programa va a correr en un sistema distribuido en el cual los nodos están conectados usando una red Toroide. 
+
+En este caso, hemos aprovechado las peculiaridades de la red, para poder ejecutar el algoritmo con una complejidad inferior a $O(\sqrt{N})$. Además, con este algoritmo no solo mejoramos la complejidad, sino que el flujo de datos por la red está controlado y ordenado. De esta forma estamos evitando colisiones y mejorando de una manera muy notoria el rendimiento de la red.
+	
+	
+	
+\section{Red Hipercubo}
+\subsection{Enunciado}
+Dado un archivo con nombre datos.dat, cuyo contenido es una lista de valores separados por comas, nuestro programa realizará lo siguiente:
+
+El proceso de rank 0 destribuirá a cada uno de los nodos de un Hipercubo de dimensión D, los 2\^{}D numeros reales que estarán contenidos en el archivo datos.dat. En caso de que no se hayan lanzado suficientes elementos de proceso para los datos del programa, éste emitirá un error y todos los procesos finalizarán.
+
+En caso de que todos los procesos han recibido su correspondiente elemento, comenzará el proceso normal del programa. Se pide calcular el elemento mayor de toda la red, el elemento de proceso con rank 0 mostrará en su salida estándar el valor obtenido. La complejidad del algoritmo no superará O(logaritmo\_base\_2(n)) Con n número de elementos de la red.
+
+
+\subsection{Planteamiento de la solución}
+
+\subsection{Diseño y explicación del programa}
+
+\subsection{Fuentes del programa}
+\lstinputlisting[style=C,
+caption={red\_hipercubo.c},
+label={lst:red_hipercubo},
+firstline=8]{../red_hipercubo.c}
+
+\subsection{Instrucciones de compilación y ejecución}
+
+\subsection{Conclusiones}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\nocite{*}  % Mostrar toda la bibliografia 
+\bibliography{biblist}
+\bibliographystyle{plain}
+
+\end{document}

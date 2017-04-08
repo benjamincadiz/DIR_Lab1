@@ -1,0 +1,23 @@
+% This file was created with JabRef 2.10.
+% Encoding: UTF8
+
+
+@Manual{apuntes,
+  Title                    = {Apuntes de Diseño de Infraestructura de Red},
+  Author                   = {Javier Ayllon},
+  Year                     = {2017},
+
+  Owner                    = {joseangel},
+  Timestamp                = {2017.03.31}
+}
+
+@Electronic{openmpi_doc,
+  Title                    = {Openmpi Documentation},
+  HowPublished             = {\url{https://www.open-mpi.org/doc/}},
+  Note                     = {[Online; accedido el 31-marzo-2017]},
+  Url                      = {https://www.open-mpi.org/doc/},
+
+  Owner                    = {joseangel},
+  Timestamp                = {2017.03.31}
+}
+
