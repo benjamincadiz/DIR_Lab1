@@ -7,7 +7,7 @@ red-toroide:
 
 red-hipercubo:
 	rm red_hipecubo
-	mpicc red_hipecubo.c -o red_hipecubo
+	mpicc red_hipecubo.c -o red_hipecubo -lm
 
 clean:
 	rm red_toroide
