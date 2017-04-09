@@ -11,6 +11,16 @@
   Timestamp                = {2017.03.31}
 }
 
+@Electronic{ArqAvan,
+  Title                    = {Redes de Interconexión},
+  HowPublished             = {\url{https://www.infor.uva.es/~bastida/Arquitecturas%20Avanzadas/Redes.pdf}},
+  Note                     = {[Online; accedido el 8-abril-2017]},
+  Url                      = {https://www.infor.uva.es/~bastida/Arquitecturas%20Avanzadas/Redes.pdf},
+
+  Owner                    = {joseangel},
+  Timestamp                = {2017.04.09}
+}
+
 @Electronic{openmpi_doc,
   Title                    = {Openmpi Documentation},
   HowPublished             = {\url{https://www.open-mpi.org/doc/}},

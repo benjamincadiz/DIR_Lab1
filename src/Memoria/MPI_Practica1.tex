@@ -228,8 +228,20 @@ En caso de que todos los procesos han recibido su correspondiente elemento, come
 
 
 \subsection{Planteamiento de la solución}
+Para resolver este segundo ejercicio usaremos una red hipercubo. Las redes hipercubo son redes formadas por una malla de \emph{D} dimensiones en las que se suprimen los nodos interiores. Por ejemplo, una malla de dimensión 1 sólo tiene 2 nodos. El grado de los nodos de una red hipercubo de \emph{D} dimensiones es \emph{D}. Estas redes han sido bastante utilizadas en computadores paralelos, pero han ido evolucionando en otras topologías más escalables.
+
+Su funcionamiento consiste en que cada nodo intercambia mensajes sólo con aquellos nodos con los que está conectado y sólo en la dimensión en la que estemos iterando. Un nodo está conectado con otro si y sólo si su distancia de Hamming es 1, es decir, sólo varía un bit en sus representaciones numéricas en binario. Dependiendo de que bit cambie podemos saber en que dimensión nos estamos comunicando. Por lo tanto, lo que haremos será iterar en todas las dimensiones, y en ellas intercambiaremos mensajes entre los distintos nodos con aquel nodo resultante de mutar el bit correspondiente a esa dimensión.
+
+De esta manera, si disponemos de \emph{N} nodos en la red, la red será de dimensión $\log_2{N}$. Dado que tenemos que iterar en todas las dimensiones, la complejidad del algoritmo será de $\log_2{N}$, cumpliendo por tanto con el objetivo establecido en cuanto a complejidad.
+
 
 \subsection{Diseño y explicación del programa}
+En cuanto al diseño del programa, hemos reutilizado algunas funciones del programa anterior: \texttt{read\_and\_distribute\_token()} y \texttt{obtain\_token()}. Además se ha añadido una nueva función: \texttt{obtain\_neighbor}, que permite obtener el vecino de cada nodo dada una dimensión. Por ejemplo, el vecino del nodo 2 en la dimensión 1 es el 3 y viceversa.
+
+El algoritmo que ejecuta cada proceso simplemente utiliza un bucle for, en el cual se van recorriendo las diferentes dimensiones de la red. En cada interacción del bucle (una dimensión distinta), se envía y mensaje al nodo con el que está conectado en dicha dimensión y recibe otro mensaje de este. Se compara si el \emph{token} recibido es mayor que el asignado, y de ser así, se sustituye el asignado al proceso por el recibido.
+
+Finalmente el proceso con \emph{rank} 0 será el encargado de mostrar el elemento mayor de la red, que será el estado actual de su \emph{token}. Este elemento será el mismo en todos los nodos de la red en este momento.
+
 
 \subsection{Fuentes del programa}
 \lstinputlisting[style=C,
@@ -238,8 +250,23 @@ label={lst:red_hipercubo},
 firstline=8]{../red_hipercubo.c}
 
 \subsection{Instrucciones de compilación y ejecución}
+Para compilar el ejercicio vamos a ejecutar el siguiente comando:
+\begin{listing}[style=consola, numbers=none]
+$ make red-hipercubo
+\end{listing}%$
+
+Para ejecutarlo vamos a usar la siguiente orden:
+\begin{listing}[style=consola, numbers=none]
+$ mpirun -n 16 hipercubo
+\end{listing}%$
+
+Como se puede observar se ha usado la opción \texttt{-n 16} para crear 16 procesos dado que la constante $D$ se ha definido a 4. En caso de que esta fuera otra, se deben crear $2^D$ procesos.
+
 
 \subsection{Conclusiones}
+Las conclusiones obtenidas son iguales que las del ejercicio anterior. Hemos podido observar las ventajas que conlleva programar teniendo en mente las características físicas de la red subyacente. De esta manera y dadas las propiedades de la red hemos logrado una complejidad de $\log_2{N}$. Y de igual manera que en el ejercicio anterior, también obtenemos la ventaja de que el flujo de datos por la red está ordenado y controlado.
+
+Este tipo de redes son muy caras, dado que escalan de manera muy costosa. Subir de una dimensión a otra incrementa de manera exponencial el número de nodos necesarios. Por ello, a veces se implementa cada nodo como un router con varios nodos en él.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
