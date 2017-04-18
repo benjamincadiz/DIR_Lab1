@@ -12,19 +12,19 @@
 #define D 4 // Number of dimensions
 #define DATOS_FILE "datos.dat"
 
-void read_and_distribute_token(int* token, int rank, int numtasks){
+void read_and_distribute_token(float* token, int rank, int numtasks){
   int rc;
   MPI_Status status;
   MPI_Request request;
   FILE* file = fopen(DATOS_FILE , "r");
   int i = 0;
-  int element = 0;
+  float element = 0;
   while (!feof (file) && i < numtasks){
-    fscanf (file, "%d", &element);
+    fscanf (file, "%g,", &element);
     if(i == rank){
       *token = element;
     }else{
-      rc = MPI_Isend(&element, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &request);
+      rc = MPI_Isend(&element, 1, MPI_FLOAT, i, 1, MPI_COMM_WORLD, &request);
       if (rc != MPI_SUCCESS) {
          printf("Send error in task %d\n", rank);
          MPI_Abort(MPI_COMM_WORLD, rc);
@@ -36,10 +36,10 @@ void read_and_distribute_token(int* token, int rank, int numtasks){
   fclose (file);
 }
 
-void obtain_token(int* token, int rank){
+void obtain_token(float* token, int rank){
   int rc;
   MPI_Status status;
-  rc = MPI_Recv(token, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+  rc = MPI_Recv(token, 1, MPI_FLOAT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
   if (rc != MPI_SUCCESS) {
      printf("Receive error in task %d\n", rank);
      MPI_Abort(MPI_COMM_WORLD, rc);
@@ -60,8 +60,8 @@ int obtain_neighbor(int rank, int dimension){
 
 int main (int argc, char *argv[]){
   int numtasks,       // Number of MPI tasks
-      rank,           // Task number of the current process
-      token;          // The number from datos.dat for this process
+      rank;           // Task number of the current process
+  float token;        // The number from datos.dat for this process
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD,&numtasks);
@@ -81,10 +81,11 @@ int main (int argc, char *argv[]){
   }
 
   // Algorithm
-  int i, in_token, rc;
+  int i, rc;
+  float in_token;
   MPI_Status status;
   for (i = 1; i <= D; i++){
-    rc = MPI_Send(&token, 1, MPI_INT, obtain_neighbor(rank, i), i,
+    rc = MPI_Send(&token, 1, MPI_FLOAT, obtain_neighbor(rank, i), i,
                   MPI_COMM_WORLD);
     if (rc != MPI_SUCCESS) {
        printf("Send error in task %d\n", rank);
@@ -92,7 +93,7 @@ int main (int argc, char *argv[]){
        exit(1);
     }
 
-    rc = MPI_Recv(&in_token, 1, MPI_INT, obtain_neighbor(rank, i), MPI_ANY_TAG,
+    rc = MPI_Recv(&in_token, 1, MPI_FLOAT, obtain_neighbor(rank, i), MPI_ANY_TAG,
                   MPI_COMM_WORLD, &status);
     if (rc != MPI_SUCCESS) {
        printf("Receive error in task %d\n", rank);
@@ -106,7 +107,7 @@ int main (int argc, char *argv[]){
   }
 
   if(rank == 0){
-    printf("El mayor elemento de toda la red es %d.\n", token);
+    printf("El mayor elemento de toda la red es %g.\n", token);
   }
 
   MPI_Finalize();
