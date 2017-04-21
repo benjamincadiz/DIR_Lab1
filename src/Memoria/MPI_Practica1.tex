@@ -181,9 +181,10 @@ De esta manera, obtendremos la solución al ejercicio con $2*\sqrt{N-1}$ mensaje
 
 \subsection{Diseño y explicación del programa}
 % Explicar las medidas adoptadas, como por ej que elementos de la hoja de datos se cojen.
-Debemos resaltar algunas cuestiones de diseño. La primera tiene que ver con la lectura y distribución de los distintos elementos del archivo. El proceso cuyo \emph{rank} sea el 0, será el que leerá el archivo y distribuirá sus datos mediante la llamada a la función \texttt{read\_and\_distribute\_token()}. Con la llamada a está función se leerán tantos elementos como el numero de procesos lanzados. Debe haber un número de elementos en el archivo mayor o igual al de procesos lanzados. En caso de que se lancen menos proceso que elementos hay en el archivo, solo se leerán los primeros. El resto de procesos llamarán a la función \texttt{obtain\_token()} que obtendrá su elemento asociado.
+Debemos resaltar algunas cuestiones de diseño. La primera tiene que ver con la lectura y distribución de los distintos elementos del archivo. El proceso cuyo \emph{rank} sea el 0, será el que leerá el archivo y distribuirá sus datos mediante la llamada a la función \texttt{read\_and\_distribute\_token()}. Con la llamada a está función se leerán tantos elementos como el numero de procesos lanzados. Debe haber un número de elementos en el archivo mayor o igual al de procesos lanzados. En caso de que se lancen menos proceso que elementos hay en el archivo, solo se leerán los primeros. El resto de procesos llamarán a la función \texttt{obtain\_token()} que obtendrá su elemento asociado. Estos elementos serán números en punto flotante separados por comas.
 
 Para calcular los vecinos de un nodo (vecinos norte, sur, este y oeste) se ha usado la función \texttt{obtain\_neighbors}. Esta función mediante unas pequeñas cuentas obtiene el \emph{rank} de los vecinos de un determinado nodo (proceso).
+%TODO: Explicar como lo hace el metodo de calcular vecinos
 
 El algoritmo que ejecuta cada proceso consiste en dos bucles \emph{for}. Ambos iterarán tantas veces como el valor de L (el valor del lado). El primero de estos bucles permitirá que los procesos se manden los datos por columnas, como se indicó en el planteamiento de la solución. De tal manera que cada proceso mandará al que tenga en el sur, y recibirá del que tenga en el norte. El segundo hará lo propio en filas, mandando su \emph{token} al proceso en el este y recibiendo el que tenga en el oeste. En cada iteracción de estos bucles se comprueba cuál es el menor, y este es conservado como \emph{token}. 
 
@@ -200,15 +201,20 @@ firstline=8]{../red_toroide.c}
 \subsection{Instrucciones de compilación y ejecución}
 Para compilar el ejercicio vamos a ejecutar el siguiente comando:
 \begin{listing}[style=consola, numbers=none]
-$ make red-toroide
+$ make red_toroide
 \end{listing}%$
 
 Para ejecutarlo vamos a usar la siguiente orden:
 \begin{listing}[style=consola, numbers=none]
-$ mpirun -n 16 red_toroide
+$ mpirun -n 16 exec/red_toroide
 \end{listing}%$
 
 Como se puede observar se ha usado la opción \texttt{-n 16} para crear 16 procesos dado que la constante $L$ se ha definido a 4. En caso de que esta fuera otra, se deben crear $L*L$ procesos.
+
+También podemos usar la orden siguiente para ejecutar el programa: 
+\begin{listing}[style=consola, numbers=none]
+$ make test_red_toroide
+\end{listing}%$
 
 
 \subsection{Conclusiones}
@@ -237,6 +243,7 @@ De esta manera, si disponemos de \emph{N} nodos en la red, la red será de dimen
 
 \subsection{Diseño y explicación del programa}
 En cuanto al diseño del programa, hemos reutilizado algunas funciones del programa anterior: \texttt{read\_and\_distribute\_token()} y \texttt{obtain\_token()}. Además se ha añadido una nueva función: \texttt{obtain\_neighbor}, que permite obtener el vecino de cada nodo dada una dimensión. Por ejemplo, el vecino del nodo 2 en la dimensión 1 es el 3 y viceversa.
+%TODO: como lo hace?
 
 El algoritmo que ejecuta cada proceso simplemente utiliza un bucle for, en el cual se van recorriendo las diferentes dimensiones de la red. En cada interacción del bucle (una dimensión distinta), se envía y mensaje al nodo con el que está conectado en dicha dimensión y recibe otro mensaje de este. Se compara si el \emph{token} recibido es mayor que el asignado, y de ser así, se sustituye el asignado al proceso por el recibido.
 
@@ -252,15 +259,20 @@ firstline=8]{../red_hipercubo.c}
 \subsection{Instrucciones de compilación y ejecución}
 Para compilar el ejercicio vamos a ejecutar el siguiente comando:
 \begin{listing}[style=consola, numbers=none]
-$ make red-hipercubo
+$ make red_hipercubo
 \end{listing}%$
 
 Para ejecutarlo vamos a usar la siguiente orden:
 \begin{listing}[style=consola, numbers=none]
-$ mpirun -n 16 hipercubo
+$ mpirun -n 16 exec/hipercubo
 \end{listing}%$
 
 Como se puede observar se ha usado la opción \texttt{-n 16} para crear 16 procesos dado que la constante $D$ se ha definido a 4. En caso de que esta fuera otra, se deben crear $2^D$ procesos.
+
+También podemos usar la orden siguiente para ejecutar el programa: 
+\begin{listing}[style=consola, numbers=none]
+$ make test_red_hipercubo
+\end{listing}%$
 
 
 \subsection{Conclusiones}
