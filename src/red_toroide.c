@@ -29,6 +29,7 @@ void read_and_distribute_token(float* token, int rank, int numtasks){
          MPI_Abort(MPI_COMM_WORLD, rc);
          exit(1);
       }
+      MPI_Wait(&request, &status);
     }
     i++;
   }
